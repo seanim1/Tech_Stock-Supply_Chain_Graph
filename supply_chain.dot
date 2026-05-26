@@ -1,0 +1,58 @@
+digraph call_graph {
+    graph [rankdir=LR, splines=polyline, fontname="Helvetica"]
+    node  [fontname="Helvetica", fontsize=12, style=filled]
+    edge  [fontname="Helvetica", fontsize=10]
+
+    ASML  [label="ASML", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/ASML/", target="_blank"]
+    LRCX  [label="Lam Research\n램리서치", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/LRCX/", target="_blank"]
+    AMAT  [label="Applied Materials\n어플라이드 머티리얼즈", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/META/", target="_blank"]
+
+    TSM  [label="TSMC", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/TSM/", target="_blank"]
+
+    Samsung [label="Samsung\n삼성전자", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/005930.KS/", target="_blank"]
+    SKHynix  [label="SK Hynix\nSK하이닉스", shape=box, fillcolor="#bbffc7", URL="https://finance.yahoo.com/quote/000660.KS/", target="_blank"]
+    MU  [label="Micron\n마이크론", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/MU/", target="_blank"]
+    SNDK  [label="SanDisk\n샌디스크", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/SNDK/", target="_blank"]
+
+    INTC  [label="Intel\n인텔", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/INTC/", target="_blank"]
+    NVDA  [label="NVIDIA\n엔비디아", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/NVDA/", target="_blank"]
+    AMD  [label="AMD", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/AMD/", target="_blank"]
+
+    AMZN  [label="Amazon\n아마존", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/AMZN/", target="_blank"]
+    AWS  [label="Amazon AWS\n아마존 AWS", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/AMZN/", target="_blank"]
+    MSFT  [label="Microsoft\n마이크로소프트", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/MSFT/", target="_blank"]
+    Azure  [label="Microsoft Azure\n마이크로소프트 아주르", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/MSFT/", target="_blank"]
+    GOOGL  [label="Google\n구글", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/GOOGL/", target="_blank"]
+    GCP  [label="Google Cloud Platform\n구글 클라우드 플랫폼", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/GOOGL/", target="_blank"]
+    META  [label="Meta\n메타", shape=box, fillcolor="#adffbf", URL="https://finance.yahoo.com/quote/META/", target="_blank"]
+    
+    Equipment  [label="Equipment\n반도체 장비", shape=box, fillcolor="#d5bdfc", target="_blank"]
+    Hyperscaler  [label="Hyperscaler\n하이퍼 스케일러", shape=box, fillcolor="#d5bdfc", target="_blank"]
+    Cloud  [label="Cloud Provider\n클라우드 인프라", shape=box, fillcolor="#d5bdfc", target="_blank"]
+    
+    Memory  [label="Memory\n메모리", shape=box, fillcolor="#d5bdfc", target="_blank"]
+    DRAM  [label="DRAM (HBM)", shape=box, fillcolor="#d5bdfc", target="_blank"]
+    NAND  [label="NAND (SSD)", shape=box, fillcolor="#d5bdfc", target="_blank"]
+    HDD  [label="Hard Drive\n하드 디스크", shape=box, fillcolor="#d5bdfc", target="_blank"]
+
+    Equipment -> LRCX
+    Equipment -> AMAT
+    
+    Cloud -> Hyperscaler
+    Hyperscaler -> AWS
+    Hyperscaler -> Azure
+    Hyperscaler -> GCP
+    
+    Memory -> DRAM
+    Memory -> NAND
+    Memory -> HDD
+    DRAM -> SKHynix
+    DRAM -> Samsung
+    DRAM -> MU
+    NAND -> SKHynix
+    NAND -> Samsung
+    NAND -> MU
+    NAND -> SNDK
+
+
+}

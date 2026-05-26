@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tech Stock Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js"></script>
+    <style>
+        body { margin: 0; padding: 20px; }
+        #graph svg { width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <div id="graph"></div>
+
+    <script>
+        fetch('supply_chain.dot')
+            .then(res => res.text())
+            .then(dot => {
+                const viz = new Viz();
+                viz.renderSVGElement(dot)
+                    .then(svg => document.getElementById('graph').appendChild(svg));
+            })
+            .catch(err => console.error('Error:', err));
+    </script>
+</body>
+</html>
