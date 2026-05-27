@@ -2,23 +2,115 @@
 <html>
 <head>
     <title>Tech Stock Analysis</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js"></script>
+    <script src="viz.js"></script>
+    <script src="full.render.js"></script>
     <style>
-        body { margin: 0; padding: 20px; }
-        #graph svg { width: 100%; height: auto; }
+        body { margin: 0; padding: 0; overflow: hidden; background: #fff; }
+        #graph { width: 100vw; height: 100vh; cursor: grab; touch-action: none; }
+        #graph:active { cursor: grabbing; }
     </style>
 </head>
 <body>
     <div id="graph"></div>
-
     <script>
         fetch('supply_chain.dot')
             .then(res => res.text())
             .then(dot => {
                 const viz = new Viz();
-                viz.renderSVGElement(dot)
-                    .then(svg => document.getElementById('graph').appendChild(svg));
+                viz.renderSVGElement(dot).then(svg => {
+                    const container = document.getElementById('graph');
+                    svg.style.transformOrigin = '0 0';
+                    container.appendChild(svg);
+
+                    let scale = 1, panX = 0, panY = 0;
+                    let dragging = false, startX, startY;
+                    let lastPinchDist = null;
+
+                    function applyTransform() {
+                        svg.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+                    }
+
+                    function zoomAt(cx, cy, delta) {
+                        // cx, cy is the point to zoom toward (e.g. cursor or screen center)
+                        const newScale = Math.min(Math.max(scale * delta, 0.1), 10);
+                        // adjust pan so the point under cursor stays fixed
+                        panX = cx - (cx - panX) * (newScale / scale);
+                        panY = cy - (cy - panY) * (newScale / scale);
+                        scale = newScale;
+                        applyTransform();
+                    }
+
+                    // --- mouse wheel: zoom toward cursor ---
+                    document.addEventListener('wheel', e => {
+                        e.preventDefault();
+                        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                        zoomAt(e.clientX, e.clientY, delta);
+                    }, { passive: false });
+
+                    // --- mouse pan ---
+                    container.addEventListener('mousedown', e => {
+                        if (e.target.closest('a')) return;
+                        dragging = true;
+                        startX = e.clientX - panX;
+                        startY = e.clientY - panY;
+                    });
+                    window.addEventListener('mousemove', e => {
+                        if (!dragging) return;
+                        panX = e.clientX - startX;
+                        panY = e.clientY - startY;
+                        applyTransform();
+                    });
+                    window.addEventListener('mouseup', () => dragging = false);
+
+                    // --- touch ---
+                    function pinchDist(touches) {
+                        const dx = touches[0].clientX - touches[1].clientX;
+                        const dy = touches[0].clientY - touches[1].clientY;
+                        return Math.sqrt(dx * dx + dy * dy);
+                    }
+
+                    function pinchCenter(touches) {
+                        return {
+                            x: (touches[0].clientX + touches[1].clientX) / 2,
+                            y: (touches[0].clientY + touches[1].clientY) / 2,
+                        };
+                    }
+
+                    container.addEventListener('touchstart', e => {
+                        e.preventDefault();
+                        if (e.touches.length === 1) {
+                            dragging = true;
+                            startX = e.touches[0].clientX - panX;
+                            startY = e.touches[0].clientY - panY;
+                        } else if (e.touches.length === 2) {
+                            dragging = false;
+                            lastPinchDist = pinchDist(e.touches);
+                        }
+                    }, { passive: false });
+
+                    container.addEventListener('touchmove', e => {
+                        e.preventDefault();
+                        if (e.touches.length === 1 && dragging) {
+                            panX = e.touches[0].clientX - startX;
+                            panY = e.touches[0].clientY - startY;
+                            applyTransform();
+                        } else if (e.touches.length === 2) {
+                            const dist = pinchDist(e.touches);
+                            if (lastPinchDist) {
+                                const delta = dist / lastPinchDist;
+                                const center = pinchCenter(e.touches);
+                                // zoom toward the midpoint between two fingers
+                                zoomAt(center.x, center.y, delta);
+                            }
+                            lastPinchDist = dist;
+                        }
+                    }, { passive: false });
+
+                    container.addEventListener('touchend', () => {
+                        dragging = false;
+                        lastPinchDist = null;
+                    });
+                });
             })
             .catch(err => console.error('Error:', err));
     </script>
